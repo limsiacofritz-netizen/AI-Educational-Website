@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz | Understanding AI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="Main navigation">
+      <a href="index.html" class="nav__brand">Understanding AI</a>
+      <ul class="nav__links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="what-is-ai.html">What is AI</a></li>
+        <li><a href="benefits.html">Benefits</a></li>
+        <li><a href="risks.html">Risks</a></li>
+        <li><a href="quiz.html" aria-current="page">Quiz</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <article>
+      <h1>Test Your Knowledge</h1>
+      <p>Answer these 5 quick questions to see what you've learned about AI. Click an answer to find out if you're right.</p>
+
+      <section id="quiz-app" aria-live="polite">
+        <!-- Quiz questions are inserted here by JavaScript -->
+      </section>
+
+      <section id="quiz-result" class="hero" style="display:none;" aria-live="polite">
+        <h2>Your Score</h2>
+        <p id="score-text"></p>
+        <div class="hero__actions">
+          <button id="retry-btn" class="btn">Try Again</button>
+          <a href="what-is-ai.html" class="btn btn--outline">Review What is AI</a>
+        </div>
+      </section>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Understanding AI. Built for students, by a student.</p>
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        question: "What does AI mainly learn from?",
+        options: [
+          "Following rules typed by a programmer one by one",
+          "Huge amounts of examples, called data",
+          "Random guessing",
+          "Copying human brains exactly"
+        ],
+        correct: 1,
+        explanation: "Most modern AI learns by finding patterns in large amounts of data, rather than following hand-typed rules."
+      },
+      {
+        question: "Which of these is a real benefit of AI mentioned on this site?",
+        options: [
+          "It replaces the need for doctors completely",
+          "It can help detect diseases earlier by spotting patterns in scans",
+          "It guarantees no jobs will ever change",
+          "It removes the need for data privacy laws"
+        ],
+        correct: 1,
+        explanation: "AI can support (not replace) doctors by spotting patterns in scans and test results."
+      },
+      {
+        question: "Why can AI sometimes be unfair or biased?",
+        options: [
+          "Because computers are naturally mean",
+          "Because it learns from data made by humans, which can contain unfair patterns",
+          "Because it's designed to be biased on purpose",
+          "Because it doesn't use any data at all"
+        ],
+        correct: 1,
+        explanation: "AI learns from human-created data, so it can pick up and repeat existing unfair patterns without meaning to."
+      },
+      {
+        question: "What's a privacy concern with AI mentioned on this site?",
+        options: [
+          "AI never uses any personal data",
+          "AI tools are often trained on large amounts of personal data",
+          "AI only works offline",
+          "AI cannot access the internet"
+        ],
+        correct: 1,
+        explanation: "Many AI tools are trained on large amounts of personal data, raising questions about ownership and use."
+      },
+      {
+        question: "Which of these is an everyday example of AI you might already use?",
+        options: [
+          "A voice assistant on your phone",
+          "A wooden pencil",
+          "A paper map",
+          "A landline telephone"
+        ],
+        correct: 0,
+        explanation: "Voice assistants, spelling suggestions, and photo filters are everyday AI already in your pocket."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const quizApp = document.getElementById('quiz-app');
+    const resultSection = document.getElementById('quiz-result');
+    const scoreText = document.getElementById('score-text');
+    const retryBtn = document.getElementById('retry-btn');
+
+    function renderQuestion() {
+      const q = questions[currentQuestion];
+      quizApp.innerHTML = `
+        <div class="card" style="max-width: 100%;">
+          <h3>Question ${currentQuestion + 1} of ${questions.length}</h3>
+          <p>${q.question}</p>
+          <div id="options"></div>
+          <p id="feedback" style="margin-top: 1rem; font-weight: 700;"></p>
+          <button id="next-btn" class="btn" style="display:none; margin-top: 1rem;">
+            ${currentQuestion === questions.length - 1 ? 'See Score' : 'Next Question'}
+          </button>
+        </div>
+      `;
+
+      const optionsDiv = document.getElementById('options');
+      q.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = option;
+        btn.className = 'btn btn--outline';
+        btn.style.display = 'block';
+        btn.style.width = '100%';
+        btn.style.textAlign = 'left';
+        btn.style.marginTop = '0.5rem';
+        btn.addEventListener('click', () => selectAnswer(index));
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(index) {
+      const q = questions[currentQuestion];
+      const feedback = document.getElementById('feedback');
+      const optionButtons = document.querySelectorAll('#options button');
+
+      optionButtons.forEach(btn => btn.disabled = true);
+
+      if (index === q.correct) {
+        score++;
+        feedback.textContent = "Correct! " + q.explanation;
+        feedback.style.color = '#0F4C3A';
+      } else {
+        feedback.textContent = "Not quite. " + q.explanation;
+        feedback.style.color = '#B3261E';
+      }
+
+      document.getElementById('next-btn').style.display = 'inline-block';
+    }
+
+    quizApp.addEventListener('click', (e) => {
+      if (e.target && e.target.id === 'next-btn') {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      }
+    });
+
+    function showResults() {
+      quizApp.style.display = 'none';
+      resultSection.style.display = 'block';
+      scoreText.textContent = `You got ${score} out of ${questions.length} correct!`;
+    }
+
+    retryBtn.addEventListener('click', () => {
+      currentQuestion = 0;
+      score = 0;
+      quizApp.style.display = 'block';
+      resultSection.style.display = 'none';
+      renderQuestion();
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
